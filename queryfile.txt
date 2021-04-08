@@ -1,0 +1,1797 @@
+--PostGreSQL:10. Kabir1234
+--1. Basic Query:
+
+--Astrick *, without any conditio, So returning all the records
+
+Select * From Employees Order By employee_id DESC
+
+--a. Multiple Condition:Only Employees work in Clothing department and Make less than 90,000
+Where clause and some operator:
+
+Select * From Employees 
+Where Department = 'Clothing' And Salary >90000 And Region_ID = 2
+Order By Salary
+
+Select * From Employees
+Where Department = 'Sports'
+OR Department = 'First Aid'
+OR Department = 'Toys'
+OR Department = 'Garden'
+
+b. DISTINCT department from Employees Table and compare with total department in Department Table.
+	
+Select DISTINCT (Department) From Employees
+--returned 27 Departments from Employees Table.
+Select DISTINCT (Department) From Departments
+--returned 24 different Departments in Departments Table.
+
+Select DISTINCT (Department) From Employees
+where Department NOT IN (Select Department from Departments)
+--Returned only 4 Distinct department since they don't exist in Departments table, But Employees Table.
+--Maintenance, Plumbing, Security, Camping
+
+c. Every other department except SPORT, Using NOT IN, NOT =, !=, <>, 
+
+Select * From Employees where Not Department = 'Sports'
+--Return 966 records.
+Select * From Employees where Department != 'Sports'
+--Return 966 records.
+Select * From Employees where Department <> 'Sports'
+--Return 966 records.
+Select * From Employees where 'Sports' NOT IN (Department);
+--Return 966 records.
+
+Only Sports Department
+Select * From Employees where NOT Department <> 'Sports'
+
+d.IS NULL or IS NOT NULL when column contains NULL value or Data Missing on Email:
+
+Select * From Employees Where Email is Null
+--204 Employees don't have Email, they are recorded as NULL
+Select * From Employees Where Email is Not Null
+--796 Employess have some kind of Emails.
+
+--Not Email is Null is equql to email IS NULL
+Select * From Employees Where Not Email is Null
+Not Email is Null
+
+e. Return only firtst 10 rows only:
+
+Select DISTINCT(Department) From Employees Order By 1 Limit 10
+Select DISTINCT(Department) From Employees Order By Department Limit 10
+--Only apply to MS SQL
+Select DISTINCT(Department) From Employees Order By Department top 10 
+Select DISTINCT(Department) From Employees Order By Department Fetch FIRST 10 ROWS ONLY
+
+-- Question 1: Write a query to display the names of those students that are between the ages of 18 and 20.
+SELECT student_name
+FROM students
+WHERE age BETWEEN 18 AND 20;
+
+-- Question 2: Write a query to display all of those students that contain the letters "ch" in their name or 
+their name ends with the letters "nd".
+
+SELECT * FROM students
+WHERE student_name like '%ch%'OR student_name like '%nd';
+-- Question 3: Write a query to display the name of those students that have the letters 
+
+"ae" or "ph" in their name and are NOT 19 years old.
+SELECT student_name FROM students
+WHERE (student_name like '%ae%' OR student_name like '%ph%')
+AND age != 19;
+
+--4 Question 4: Write a query that lists the names of students sorted by their age from largest to smallest.
+
+SELECT student_name FROM students
+ORDER BY age DESC;
+
+Question 5: The student must not be older than age 20 if their student_no is either between 3 and 5 or 
+their student_no is 7. Your query should also return students older than age 20 but in that case they must 
+have a student_no that is at least 4.
+
+SELECT student_name, age
+FROM students ORDER BY age DESC
+LIMIT 4;
+
+---------------------------------------------------------Function--------------------------------------------------------------
+
+--2: Function Like UPPER, LOWER, LENGTH, TRIM, 
+
+--a. Retrieving data upper\Lower case Using UPPER or LOWER function formating column name.
+Select UPPER (first_name), LOWER(last_name), * From Employees
+
+--b. concatenating Using Pipe or combining columns--Concatenet
+Select UPPER (first_name) || LOWER(last_name), * From Employees
+
+--c.Logical expression either Yes OR No,Bolean Expression (Salary>140000)
+Select UPPER (first_name) ||'   '|| LOWER(last_name) as FullName, (Salary>140000) From Employees
+
+--d. total length including empty space: Using LENGTH function
+Select LENGTH(First_name), Length(TRIM(first_name)) as First, LOWER(last_name), * From Employees
+
+Select Length('    Hello world    ');
+Returned 19 length.
+
+Select Length(TRIM('    Hello world    '));
+Disregarding empty space: length: 11
+
+--e.  Boolean Function: Return all data, if Salary is less than 140,000 that will mark No, otherwise Yes
+
+Select first_name, (salary>140000) as SalaryBoolean, Salary from Employees
+SalaryBoolean= True, Salary= 159561
+
+--f. IN-- that can filter multple values: 
+--Multiple value can be boleaned Yes or No, such as Clothing or Sports
+Select first_name, Department, Department IN ('Clothing', 'Sports') from Employees
+
+Select first_name, Department,  ('Clothing' IN (Department)) Cloth_Category, 
+('Sports' IN (Department)) Sports_Category from Employees
+
+Select Department, Department IN ('Sports', 'Clothing', 'Tools') as Bool1 From Employees
+Order By Bool1 DESC
+
+--g Extracting Data by using SUBSTRING
+
+Select (' This is a database testing')
+
+Select SUBSTRING(' This is a database testing' From 2 for 4)
+--Returned 'This'
+Select SUBSTRING(' This is a database testing' From 11 for 10)
+--Returned 'Database'
+Select SUBSTRING(' This is a database testing' From 4 )
+Select SUBSTRING (First_name From 1 For 3), First_name From Employees
+--Returned Start from 1 and upto next 3 on Forst Column as Ber for Berrie, Aer for Aeriell
+
+--h REPLACE--create repporting original value 'Clothing' replace with 'clothes'
+
+Select First_name, Department, REPLACE (Department, 'Clothing', 'clothes') From Employees
+--Not passing Multiple parameters
+Select First_name, Department, REPLACE (Department, 'Clothing', 'clothes') Rep1,--Returned 'This'
+REPLACE (Department, 'Sports', 'Soccer') Rep2 From Employees
+
+Select First_name, Department, REPLACE (Department, 'Clothing', 'clothes1') as Replace1, 
+Department || 'Department' As concent1 From Employees
+
+--i POSITION
+Select First_name, Department, POSITION ('S' IN Department) SPositionDept, LENGTH(First_name) LenName From Employees
+where Department = 'Sports'
+--POSITION('S' upper case in Sports which is 1st position.
+--POSITION('s' lower case in Sports which is 6th position.
+--Length of First name, it depends on.
+
+Select First_name, email, POSITION ('@' IN email) PositionInEmail From Employees
+--Aeriell's email is amcnee1@google.es, the position for @ is 8th.
+
+Select First_name, email, SUBSTRING(email, POSITION('@' IN email) + 1) as FormattedText From Employees
+Returning one more position advanced by +1, returning google.es
+
+Select First_name, email, SUBSTRING(email, POSITION('@' IN email)) as FormattedText From Employees
+--"@google.es" returning with @
+
+--j. COALESCE: identify Null value for Email and replace with "None01"
+Select email, COALESCE (email, 'None01') From Employees
+
+--3. Function--max, min, avg for aggregating Salary.
+Select max(Salary) as Max_Salary From Employees
+Select min(Salary) as Min_Salary From Employees
+Select ROUND(AVG(Salary)) as Average_Salary From Employees
+
+Select COUNT (Email) From Employees; --796
+--counting number of Email, but null is not included.
+Select COUNT (employee_id) From Employees;--1000
+
+---------------------------------------------Exercise------------------------------------------------------------------------------
+Create a Professors table:
+create table professors
+(
+	last_name varchar (20),
+	department varchar(12),
+	salary integer,
+	hire_date date
+);
+
+insert into professors values ('Chong', 'Science', 88000, '2006-04-18');
+insert into professors values ('Brown', 'Math', 97000, '2002-08-22');
+insert into professors values ('Jones', 'History', 67000, '2009-11-17');
+insert into professors values ('Wilson', 'Astronomy', 110000, '2005-01-15');
+insert into professors values ('Miller', 'Agriculture', 82000, '2008-05-08');
+insert into professors values ('Williams', 'Law', 105000, '2001-06-05');
+
+
+1. Write a query against the professors table that can output the following in the result: "Chong works in the Science department"
+Select Last_Name || '  works in the  '|| Department || ' Department ' From Professors
+
+
+2. Write a SQL query against the professors table that would return the following result:
+
+"It is false that professor Chong is highly paid"
+"It is true that professor Brown is highly paid"
+"It is false that professor Jones is highly paid"
+"It is true that professor Wilson is highly paid"
+"It is false that professor Miller is highly paid"
+"It is true that professor Williams is highly paid"
+
+NOTE: A professor is highly paid if they make greater than 95000.
+
+SELECT 'It is ' || (salary > 95000) ||
+' that professor ' || last_name || ' is highly paid'
+FROM professors
+
+
+3.Write a query that returns all of the records and columns from the professors table but shortens the department names to only the first three characters in upper case.
+
+Select UPPER(SUBSTRING(Department From 1 for 3)) as Depert_Upper, * From Professors
+
+4. Write a query that returns the highest and lowest salary from the professors table excluding the professor named 'Wilson'.
+
+Select Max(Salary) as Highest_Salary, Min(Salary) as Min_Salary From Professors
+where Last_Name != 'Wilson'
+
+5. Write a query that will display the hire date of the professor that has been teaching the longest.
+
+SELECT MIN(hire_date) 
+FROM professors;
+
+Select DAY(hire_date) from Professors
+
+
+-------------------------------------Grouping Data and computing Aggregate Data----------------------------------------------------
+
+CREATE TABLE Cars (Make, varchar(10))
+
+Insert INTO cars Values ('Hunda');
+Insert INTO cars Values ('Hunda');
+Insert INTO cars Values ('Hunda');
+Insert INTO cars Values ('Toyota');
+Insert INTO cars Values ('Toyota');
+Insert INTO cars Values ('Nissan');
+Insert INTO cars Values ('Nissan');
+
+--1 Group By Clause: In Select statement Department selected which why Group By Department. Grouping Department but those department
+mention in them Where Clouse condition: here 'Sports', 'Camping', 'Tools'
+
+Select Department, count(*) From Employees
+where Department in ('Sports', 'Camping', 'Tools')
+Group By Department
+--Result: Tools 39
+	Sports	34
+	Camping	36
+--2 SUM of each department, that is Group By Department
+
+Select SUM(Salary), Department From Employees
+Group By Department
+--Return: 27 different Department and Sum of each department's altogether Salary.
+
+Select SUM(Salary), Department From Employees
+Where Region_id IN (4, 5, 6, 7)
+Group By Department
+--Return: Department Movies or Camping in Region 5, the sum are 777877, 628251
+
+--3. Group by Department to retrieve Max, Avg, Min where it follows Salary more than 70,000 condition,
+then Group By and Order By
+--Multiple Group By, Where clause is defined before Group By and Order By.
+--Aggregate Columns which have multiple values like 30 Employees work in First Aid department, so Department is
+--Aggregate Columns.
+
+Select  Count(*) No_Employees, ROUND(AVG(Salary)) Avg_salary, Max(Salary) Max_Salary, 
+Min(Salary) Min_Salary, Department From Employees
+Where Salary>70000
+Group By Department
+Order by No_Employees DESC
+
+
+Select Department, Gender, Count(*) From Employees
+Group By Department, Gender
+Order By Department
+
+--3--Having clause after the Grouping, Count(*) is Aggregate Data, that's why Having Count(*) after Group By
+
+Select Department, Count(*) From Employees
+Group By Department
+Having  Count(*)> 35---filtering group data after grouping, can't use Where Clause in Group
+Order By Department
+
+--4. How many have same name> count number of First_Name
+
+Select First_name, Count(*) From Employees
+Group By First_name
+Having Count(*)>1
+
+--Rasult: 69 people have same name either 2 or 3 people use same name.
+
+--5. DISTINCT and Group By returned same of Department:
+
+Select DISTINCT(Department) From Employees
+
+Select Department From Employees
+Group By Department
+
+--6. Number of Domain after @, for instance; tamu.edu (5) or zdnet.com (5 different customer have same domain)
+
+Select (SUBSTRING(email, POSITION('@' IN email)+1)) As Domain, Count(*) From Employees
+Group By Domain
+Having Count(*)>1
+
+Select SUBSTRING(Email, POSITION('@' IN Email)+1) as Domain, Count(*) From Employees
+Where Email IS NOT NULL
+GROUP BY Domain --OR SUBSTRING(Email, POSITION('@' IN Email)+1)
+Having Count(*)>1
+ORDER BY Count(*) DESC
+
+--6 Group By Gender, Region_id, Min(Salary), Max(Salary), AVG(Salary)
+--Group By Gender, Region_id, Min(Salary), Max(Salary), Avg(Salary)
+
+Select Gender, Region_id, Min(Salary), Max(Salary), ROUND(AVG(Salary)), Count(*) From Employees
+Group By Gender, Region_id
+Order By Gender, Region_id ASC
+
+------------------------------Home Work----------------------------------------------------
+1. Write a query that displays only the state with the largest amount of fruit supply.
+
+  SELECT state
+    FROM fruit_imports 
+    GROUP BY state
+    ORDER BY SUM(supply) desc
+    LIMIT 1
+
+2. Write a query that returns the most expensive cost_per_unit of every season. The query should display 2 columns, the season and the cost_per_unit
+
+SELECT season, MAX(cost_per_unit) highest_cost_per_unit
+FROM fruit_imports
+GROUP BY season
+Order By MAX(cost_per_unit) DESC
+
+3. Write a query that returns the state that has more than 1 import of the same fruit.
+Select State, Name, count(*) From fruit_imports
+Group By State, Name
+Having Count(*)>1
+Order By State ASC
+
+4. Write a query that returns the seasons that produce either 3 fruits or 4 fruits.
+
+Select Season, count(*) From fruit_imports
+Group By Season
+Having Count(*)>=3
+Order By Season ASC
+
+--Imtiaz
+SELECT season, COUNT(name) FROM fruit_imports
+GROUP BY season
+HAVING count(name) = 3 OR count(name) = 4
+
+5. Write a query that takes into consideration the supply and cost_per_unit columns for determining the total cost and returns the most expensive state with the total cost.
+
+Select State, Name, Supply, ((Supply) * (cost_per_unit)) as COST   From fruit_imports
+Group By State, Name, Supply, ((Supply) * (cost_per_unit))
+Order By ((Supply) * (cost_per_unit)) DESC
+
+Imtiaz
+SELECT state, SUM(supply * cost_per_unit) total_cost FROM fruit_imports
+GROUP BY state
+ORDER BY total_cost desc
+LIMIT 1
+
+Execute the below SQL script and answer the question that follows:
+
+CREATE table fruits (fruit_name varchar(10));
+INSERT INTO fruits VALUES ('Orange');
+INSERT INTO fruits VALUES ('Apple');
+INSERT INTO fruits VALUES (NULL);
+INSERT INTO fruits VALUES (NULL);
+	
+5. Write a query that returns the count of 4. You'll need to count on the column fruit_name and not use COUNT(*)
+
+    HINT: You'll need to use an additional function inside of count to make this work.
+	SELECT COUNT(COALESCE(fruit_name, 'SOMEVALUE'))
+    FROM fruits;
+---------------------------------------Using Subqueries----------------------------------------------------
+Chapter 5, Subqueries is query inside another queries either in Select, or Where in Source Table or others.
+
+--1. using SubQuery in Where Clausen 
+--in this query Camping, Plumbing, Maintenance, Security not exist in Department table but exist in Employees
+-- table.
+Employee table has department, also Department Table.
+NOT IN condition retrieve only Employee work in Camping, Plumbing, Maintenance, Security Department.
+
+Select Department, * From Employees
+Where Department NOT IN (Select Department From Departments )
+Order By Department 
+ 
+ Select Distinct(Department) From Employees--27 Departments
+ Select Distinct(Department) From Departments--24 Departments
+--2. Colmn Name has to be in Inner and outer Table
+
+Select * From 
+(Select * From Employees a where Salary> 150000) a
+
+--Column Name needs table name same as source and outer table
+Select a.FirstName, a.Salary1 From
+(Select First_name as FirstName, Salary as Salary1 From Employees where Salary >150000) a
+
+--2 Subquery in "From" Clause which is a same source:
+
+Select a.FirstName, a.Salary1, b.Sport_Cl From
+(Select First_name as FirstName, Salary as Salary1 From Employees where Salary >150000) a,
+(Select Department as Sport_Cloth From Employees where Department IN ('Sports', 'Clothing')) b
+
+--2. Subquery in Where Clause: Retreiving data Electronic Division from another table Department.
+
+Select * From Employees
+Where Department IN (Select Department From Departments where Division IN ('Electronics'))
+
+Select * From Departments where division IN ('Electronics')
+--Division contains--Computers, Device Repair and Phones & Tablets
+
+Region is another table which contain Country table
+
+Select * From Employees
+Where Salary >130000
+AND Region_id IN (Select Region_id From Regions where Country IN ('Asia', 'United States')
+
+--Each employee makes less from Max Salary
+Select First_name, Department, ((Select Max(Salary) From Employees a)-Salary) DiffSalary From Employees
+Where Region_id IN (Select Region_id From Regions where Country IN ('Asia', 'United States'))
+
+3--Using multiple Subquery to retrieve Own Salary, Max Salary, the Difference from Max Salary				  
+
+Select First_name, Department, Salary,(Select Max(Salary) From Employees a),((Select Max(Salary) From Employees a)-(Salary)) diff_salary From Employees b
+Where Region_id IN (Select Region_id From Regions where Country IN ('Asia', 'United States'))
+				  
+Select Region_id, * From Employees
+where Region_id IN (Select Region_id From Regions where Country = 'United States')
+
+4--Subqueries with ANY or ALL Operators:
+Select * From Regions where Country IN ('United States')
+--The Above query returns multiple Region_id including 1,2,3		
+--ANY can accept 1,2,3 Region_id
+Select Region_id, * From Employees
+where Region_id> ANY (Select Region_id From Regions where Country = 'United States')
+
+--ALL	ANY or ALL can be used in Where or Having Clause	  
+--ALL is Greater than 1,2,3
+Select Region_id, * From Employees
+where Region_id> ALL (Select Region_id From Regions where Country = 'United States')
+
+--3. Write a query that returns all those Employees that work in KIDS division AND
+--the dates at which those employees were hired is greater than all of the hire_dates
+--of employees who work in the maintenance department.
+					   
+-- =ANY returns either values for Children Clothing or Toys
+					   
+Select Department, * From Employees
+where Department=ANY  (Select Department From Departments where division IN ('Kids'))
+AND Hire_date> ALL (Select Hire_date From Employees where Department IN ('Maintenance'))
+
+--ANY means any either return true that meet condition
+--ALL means returns all true, but greater than those True value ( returned 8 different hire date)
+--Use IN because = for single value return for where clause.
+--Using IN which is same as ALL
+
+Select * From Employees
+Where Region_id IN ( Select Region_id From Regions where )
+
+--Same First_Name exist multiple times: 
+Number of times Same Salary earning by Employees:  more frequent same salary or First_Name
+
+Select  First_name, Count (*) From Employees
+Group By First_name
+Having Count(*)>1
+
+--Salary : 158546
+Select  Salary, Count (*) From Employees
+Group By Salary
+Having Count(*)>1	
+Order By Count(*) DESC, Salary DESC
+--Salary : 158546
+
+Select  Salary, Count (*) From Employees
+Group By Salary
+Having Count(*)>1	
+Order By Count(*) DESC, Salary DESC
+--OR
+	
+--Salary : 158546
+Select Salary From (
+Select  Salary, Count (*) From Employees
+Group By Salary
+Order By Count(*) DESC, Salary DESC	
+Limit 1) a
+--OR
+
+Salary : 158546
+Select  Salary From Employees
+Group By Salary
+Having Count(*)>= ALL (Select Count(*) From Employees GROUP BY Salary ORDER BY Salary)
+ORDER By Salary DESC
+LIMIT 1
+			  
+--Creating Table
+Select * From Dupes
+CREATE Table Dupes (id integer, name varchar (10));	
+INSERT INTO Dupes VALUES (1, 'Frank');
+INSERT INTO Dupes VALUES (2, 'Frank');
+INSERT INTO Dupes VALUES (3, 'Robert');
+INSERT INTO Dupes VALUES (4, 'Robert');
+INSERT INTO Dupes VALUES (5, 'Sam');
+INSERT INTO Dupes VALUES (6, 'Frank');
+INSERT INTO Dupes VALUES (7, 'Peter');
+				  
+--Not working because Dupes is dropped
+Select id, name From Dupes					   
+Where name > ANY( Select Count(*), name From Dupes GROUP By Name)
+Select id, name From Dupes
+Group By name, id
+				  
+Select * From dupes	
+Where id IN (
+Select Min(id)From Dupes
+GROUP By Name)
+					   
+--4 Exclude Max and Min Salary and then Average Salary
+Select Max(Salary), Min(Salary), ROUND(AVG(Salary)) ExludeAvgSalary From Employees
+--exclude Max & Min Salary
+Where Salary NOT IN ((Select Max(Salary) From Employees),
+					   (Select Min(Salary) From Employees))
+					   
+					   
+--Home Work
+--1. Is the students table directly related to the courses table? Why or why not?
+	Not directly related because no common table exist between Student and Courses.
+
+--2.Using subqueries only, write a SQL statement that returns the names of those 
+					   --students that are taking the courses Physics and US History.
+					   
+Select * From Students	
+Select * From Student_enrollment
+Select * From Courses
+					   
+Select * From Students					   
+Where student_no IN (Select Student_no From Student_enrollment					 
+where Course_no IN ( Select Course_no From Courses where course_title IN ('Physics', 'US History' )))
+				  
+SELECT student_name
+FROM students WHERE student_no IN (SELECT student_no FROM student_enrollment
+WHERE course_no IN ( SELECT course_no FROM courses 
+WHERE course_title IN ('Physics', 'US History')));	
+					   
+--3. Using subqueries only, write a query that returns the name of the student
+--that is taking the highest number of courses.
+					   
+Select * From Students					   
+Where student_no IN ( Select Student_no From Student_enrollment 
+where course_no IN (Select course_no, count(*) From Student_enrollment GROUP BY course_no LIMIT 1))
+					 
+--Imtiaz
+SELECT student_name FROM students
+WHERE student_no IN (SELECT student_no FROM (SELECT student_no, COUNT(course_no) course_cnt
+FROM STUDENT_ENROLLMENT GROUP BY student_no 
+ORDER BY course_cnt desc
+LIMIT 1 )a
+)					 
+
+--4
+--Write a query to find the student that is the oldest. You are not allowed to use LIMIT or the ORDER BY clause to solve this problem.
+SELECT *
+FROM students
+WHERE age = (SELECT MAX(age) FROM students)				 
+					 
+---------------------------------------Sec6: Case Clause---Conditional Expression------------------------------------
+
+--1 create report based on CASE 
+Select First_name, Salary,
+CASE 
+	WHEN Salary < 100000 THEN 'Under Paid'
+	WHEN Salary > 100000 AND Salary <160000 THEN 'well Paid'
+	WHEN Salary > 160000 THEN 'EXECUTIVE'
+	ELSE 'UNPAID'
+END
+From Employees
+Order By Salary Desc
+
+--Counting Number of Under Paid, Well Paid, Executive
+--Counting by Category is categorized by Under Paid, Executive and Well Paid.
+
+Select Count (*), a.Category From (
+Select First_name, Salary,
+CASE 
+	WHEN Salary < 100000 THEN 'Under Paid'
+	WHEN Salary > 100000 AND Salary <160000 THEN 'well Paid'
+	WHEN Salary > 160000 THEN 'EXECUTIVE'
+	ELSE 'UNPAID'
+END as Category
+From Employees) a
+Group By Category
+
+Select First_name, Salary From Employees
+Where Department IN ( 'Sports', 'tools')
+
+--2
+Select a.Category, Count (*) From (Select First_name, Salary,
+CASE 
+	WHEN Salary < 100000 THEN 'Under Paid'
+	WHEN Salary > 100000 AND Salary <160000 THEN 'well Paid' 
+	WHEN Salary > 160000 THEN 'EXECUTIVE'
+	ELSE 'UNPAID'
+END as Category
+From Employees
+Order By Salary Desc) a
+Group By Category
+
+--Instead of using Category like Under Paid, Well Paid or Executive, but using 1, 2, 3
+
+Select a.Category, Count(*) From (Select First_name, Salary,
+CASE 
+	WHEN Salary < 100000 THEN 1
+	WHEN Salary > 100000 AND Salary <160000 THEN 2
+	WHEN Salary > 160000 THEN 3
+	ELSE 4
+END as Category
+From Employees
+Order By Salary Desc) a
+Group By Category
+
+Select a.Category, Count (*) From (Select First_name, Salary,
+CASE 
+	WHEN Salary < 100000 THEN 1
+	WHEN Salary > 100000 AND Salary <160000 THEN 2
+	WHEN Salary > 160000 THEN 3
+	ELSE 4
+END as Category
+From Employees
+Order By Salary Desc) a
+Group By Category
+
+--3. Transport
+Select SUM (CASE WHEN Salary<100000 THEN 1 ELSE 0 END) as Under_Paid,
+	SUM (CASE WHEN Salary>100000 AND Salary <160000 THEN 1 ELSE 0 END) as Well_Paid,
+	SUM (CASE WHEN Salary>160000 THEN 1 ELSE 0 END) as Executive
+	From Employees
+	
+--4. Using Group By, and then Transport
+Select Department, count (*) From Employees
+Where Department IN ('Sports', 'Tools', 'Clothing', 'Computers')
+Group By Department
+
+Results:
+"Tools"	"39"
+"Sports"	"34"
+"Clothing"	"49"
+"Computers"	"47"
+
+Now, transpose to Sports, Tools, Clothing, Computers Column.
+
+Select SUM (CASE WHEN Department = 'Sports' THEN 1 ELSE 0 END) as Department_Sport,
+SUM (CASE WHEN Department = 'Tools' THEN 1 ELSE 0 END) as Department_Tools,
+SUM (CASE WHEN Department = 'Clothing' THEN 1 ELSE 0 END) as Department_Clothing,
+SUM (CASE WHEN Department = 'Computers' THEN 1 ELSE 0 END) as Department_Computers
+From Employees
+
+Tools	Sports	Clothing Computers
+"34"	"39"	"49"	"47"
+
+--5 Region Table
+Select * From Regions
+
+Select a.Region1, a.Region2, a.Region3, a.Region4, a.Region5, a.Region6, a.Region7
+From (
+Select First_name,
+CASE WHEN Region_id=1 THEN (Select Country From Regions where Region_id = 1) END Region1,
+CASE WHEN Region_id=2 THEN (Select Country From Regions where Region_id = 2) END Region2,
+CASE WHEN Region_id=3 THEN (Select Country From Regions where Region_id = 3) END Region3,
+CASE WHEN Region_id=4 THEN (Select Country From Regions where Region_id = 4) END Region4,
+CASE WHEN Region_id=5 THEN (Select Country From Regions where Region_id = 5) END Region5,
+CASE WHEN Region_id=6 THEN (Select Country From Regions where Region_id = 6) END Region6,
+CASE WHEN Region_id=7 THEN (Select Country From Regions where Region_id = 7) END Region7
+From Employees) a
+
+--Total of United States, Asia, Canada
+--Can we use SUM
+Select Count(a.Region1) + Count(a.Region2) + Count(a.Region3) as UnitedStates, 
+Count(a.Region4) + Count(a.Region5) as Asia,
+Count (a.Region6)+ Count(a.Region7) as Canada
+From (
+Select First_name,
+CASE WHEN Region_id=1 THEN (Select Country From Regions where Region_id = 1) END Region1,
+CASE WHEN Region_id=2 THEN (Select Country From Regions where Region_id = 2) END Region2,
+CASE WHEN Region_id=3 THEN (Select Country From Regions where Region_id = 3) END Region3,
+CASE WHEN Region_id=4 THEN (Select Country From Regions where Region_id = 4) END Region4,
+CASE WHEN Region_id=5 THEN (Select Country From Regions where Region_id = 5) END Region5,
+CASE WHEN Region_id=6 THEN (Select Country From Regions where Region_id = 6) END Region6,
+CASE WHEN Region_id=7 THEN (Select Country From Regions where Region_id = 7) END Region7
+From Employees) a
+
+--Total of United States+ Asia+Canada
+Select UnitedStates + Asia + Canada From (
+Select Count(a.Region1) + Count(a.Region2) + Count(a.Region3) as UnitedStates, 
+Count(a.Region4) + Count(a.Region5) as Asia,
+Count (a.Region6)+ Count(a.Region7) as Canada
+From (
+Select First_name,
+CASE WHEN Region_id=1 THEN (Select Country From Regions where Region_id = 1) END Region1,
+CASE WHEN Region_id=2 THEN (Select Country From Regions where Region_id = 2) END Region2,
+CASE WHEN Region_id=3 THEN (Select Country From Regions where Region_id = 3) END Region3,
+CASE WHEN Region_id=4 THEN (Select Country From Regions where Region_id = 4) END Region4,
+CASE WHEN Region_id=5 THEN (Select Country From Regions where Region_id = 5) END Region5,
+CASE WHEN Region_id=6 THEN (Select Country From Regions where Region_id = 6) END Region6,
+CASE WHEN Region_id=7 THEN (Select Country From Regions where Region_id = 7) END Region7
+From Employees) a ) b
+
+--Homework
+
+select * From Fruit_imports
+
+--1 Write a query that displays 3 columns. The query should display the fruit and it's total supply along with a category of either LOW, 
+--ENOUGH or FULL. Low category means that the total supply of the fruit is less than 20,000. The enough category means that the total 
+--supply is between 20,000 and 50,000. If the total supply is greater than 50,000 then that fruit falls in the full category. 
+--Taking into consideration the supply column and the cost_per_unit column, you should be able to tabulate the total cost to import 
+--fruits by each season. The result will look something like this:
+
+--1. Write a query that displays 3 columns. The query should display the fruit and it's total supply along with a 
+--category of either LOW, ENOUGH or FULL. Low category means that the total supply of the fruit is less than 20,000.
+--The enough category means that the total supply is between 20,000 and 50,000. If the total supply is greater than 50,000 then
+--that fruit falls in the full category.
+
+Select * From Fruit_imports
+
+Select a.* From (
+Select SUM(CASE WHEN Supply<20000 THEN 1 ELSE 0 END ) as Low_Category,
+SUM(CASE WHEN Supply>20000 AND Supply <50000 THEN 1 ELSE 0 END ) as Enough_Category,
+SUM(CASE WHEN Supply >50000 THEN 1 ELSE 0 END ) as Full_Category
+From fruit_imports) a
+
+----Imtiaz
+SELECT name, total_supply,
+CASE WHEN total_supply < 20000 THEN 'LOW'
+WHEN total_supply >= 20000 AND total_supply <= 50000 THEN 'ENOUGH'
+WHEN total_supply > 50000 THEN 'FULL'
+END as category
+FROM (
+SELECT name, sum(supply) total_supply
+FROM fruit_imports
+GROUP BY name
+) a
+
+Select * From Fruit_imports
+--2 Taking into consideration the supply column and the cost_per_unit column, you should be able to tabulate 
+--the total cost to import fruits by each season. The result will look something like this:
+
+"Winter" "10072.50"
+"Summer" "19623.00"
+"All Year" "22688.00"
+"Spring" "29930.00"
+"Fall" "29035.00"
+
+Write a query that would transpose this data so that the seasons become columns and the total cost for each season fills the first row?
+
+--2--Write a query that would transpose this data so that the seasons become columns and the total cost 
+--for each season fills the first row?
+
+Select Name, Season, Supply, State, Count (*) From Fruit_imports
+Group By Name, Season, Supply, State
+Order By Name DESC
+
+Select * From Fruit_imports
+
+
+SELECT SUM(CASE WHEN season = 'Winter' THEN total_cost end) as Winter_total,
+SUM(CASE WHEN season = 'Summer' THEN total_cost end) as Summer_total,
+SUM(CASE WHEN season = 'Spring' THEN total_cost end) as Spring_total,
+SUM(CASE WHEN season = 'Fall' THEN total_cost end) as Fall_total,
+SUM(CASE WHEN season = 'All Year' THEN total_cost end) as All_Year_total
+FROM (
+select season, sum(supply * cost_per_unit) total_cost
+from fruit_imports
+group by season
+) a
+
+-------------------------------------Section 7, using Correlated Subqueries--------------------------------------
+
+--Not Correlated
+Select First_name, Salary From Employees
+Where Salary >(Select AVG(Salary) From Employees)
+
+--1 Correlated--using Where
+Select First_name, Salary, e1.Department From Employees e1
+Where Salary>(Select AVG(Salary) AV_Salary From Employees e2 Where e1.Department = e2.Department)
+--using Select
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select AVG(Salary) from Employees where Department IN ('Sports')
+--2 at least 38 Employees working in a Department: 
+Select Department, (Select Max(Salary) as Max_Salary From Employees e1 where e1.Department= d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e where d.Department = e.Department)
+
+--3 distinct records
+Select DISTINCT(Department) From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+
+Select Department, Count (*) From Employees
+Group By Department
+--4 records using Group By
+Select (Department)  From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+Group By Department
+
+Select (Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+--4--Both are same
+Select Department, Max(Salary) Max_Salary_PerDept, Min(Salary) as MinSalary From Employees
+Group By Department 
+
+Select Department, Salary from Employees
+where Department IN ('Pharmacy')
+Order By Salary DESC
+
+Select Department, (Select Max(Salary) From Employees e1 where e1.Department = d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+Select first_name, Department, Salary, 
+(Select Round(Avg(Salary)) From Employees e1 where e1.Department = d.Department) From Employees d
+
+Select * From Employees
+
+--15--Home Work
+
+Select Department, Max(Salary), Min(Salary) From Employees
+Group By Department
+
+Select Department, First_name, Salary,
+CASE 
+	WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+where Salary IN (Max_Department, Min_Department)
+
+Result:
+
+--Not Correlated
+Select First_name, Salary From Employees
+Where Salary >(Select AVG(Salary) From Employees)
+
+--1 Correlated--using Where
+Select First_name, Salary, e1.Department From Employees e1
+Where Salary>(Select AVG(Salary) AV_Salary From Employees e2 Where e1.Department = e2.Department)
+--using Select
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select AVG(Salary) from Employees where Department IN ('Sports')
+--2 at least 38 Employees working in a Department: 
+Select Department, (Select Max(Salary) as Max_Salary From Employees e1 where e1.Department= d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e where d.Department = e.Department)
+
+--3 distinct records
+Select DISTINCT(Department) From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+
+Select Department, Count (*) From Employees
+Group By Department
+--4 records using Group By
+Select (Department)  From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+Group By Department
+
+Select (Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+--4--Both are same
+Select Department, Max(Salary) Max_Salary_PerDept, Min(Salary) as MinSalary From Employees
+Group By Department 
+
+Select Department, Salary from Employees
+where Department IN ('Pharmacy')
+Order By Salary DESC
+
+Select Department, (Select Max(Salary) From Employees e1 where e1.Department = d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+Select first_name, Department, Salary, 
+(Select Round(Avg(Salary)) From Employees e1 where e1.Department = d.Department) From Employees d
+
+Select * From Employees
+
+--15--Home Work
+
+Select Department, Max(Salary), Min(Salary) From Employees
+Group By Department
+
+Select Department, First_name, Salary,
+CASE 
+	WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+where Salary IN (Max_Department, Min_Department)
+
+--another copy
+Select Department, First_name, Salary,
+CASE WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+Where Salary IN (Max_Department,  Min_Department)
+ORDER BY Department DESC
+
+Select Count (*) From Employees
+Where Email IS NOT NULL
+
+
+
+
+
+
+
+
+
+
+--Not Correlated
+Select First_name, Salary From Employees
+Where Salary >(Select AVG(Salary) From Employees)
+
+--1 Correlated--using Where
+Select First_name, Salary, e1.Department From Employees e1
+Where Salary>(Select AVG(Salary) AV_Salary From Employees e2 Where e1.Department = e2.Department)
+--using Select
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select AVG(Salary) from Employees where Department IN ('Sports')
+--2 at least 38 Employees working in a Department: 
+Select Department, (Select Max(Salary) as Max_Salary From Employees e1 where e1.Department= d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e where d.Department = e.Department)
+
+--3 distinct records
+Select DISTINCT(Department) From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+
+Select Department, Count (*) From Employees
+Group By Department
+--4 records using Group By
+Select (Department)  From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+Group By Department
+
+Select (Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+--4--Both are same
+Select Department, Max(Salary) Max_Salary_PerDept, Min(Salary) as MinSalary From Employees
+Group By Department 
+
+Select Department, Salary from Employees
+where Department IN ('Pharmacy')
+Order By Salary DESC
+
+Select Department, (Select Max(Salary) From Employees e1 where e1.Department = d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+Select first_name, Department, Salary, 
+(Select Round(Avg(Salary)) From Employees e1 where e1.Department = d.Department) From Employees d
+
+Select * From Employees
+
+--15--Home Work
+
+Select Department, Max(Salary), Min(Salary) From Employees
+Group By Department
+
+Select Department, First_name, Salary,
+CASE 
+	WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+where Salary IN (Max_Department, Min_Department)
+
+--another copy
+Select Department, First_name, Salary,
+CASE WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+Where Salary IN (Max_Department,  Min_Department)
+ORDER BY Department DESC
+
+Select Count (*) From Employees
+Where Email IS NOT NULL
+
+
+
+
+
+
+
+
+
+
+--Not Correlated
+Select First_name, Salary From Employees
+Where Salary >(Select AVG(Salary) From Employees)
+
+--1 Correlated--using Where
+Select First_name, Salary, e1.Department From Employees e1
+Where Salary>(Select AVG(Salary) AV_Salary From Employees e2 Where e1.Department = e2.Department)
+--using Select
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select First_name, Department, Salary, 
+(Select Round(AVG(Salary)) Av_Salary From Employees e2 Where e1.Department = e2.Department) From Employees e1
+
+Select AVG(Salary) from Employees where Department IN ('Sports')
+--2 at least 38 Employees working in a Department: 
+Select Department, (Select Max(Salary) as Max_Salary From Employees e1 where e1.Department= d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e where d.Department = e.Department)
+
+--3 distinct records
+Select DISTINCT(Department) From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+
+Select Department, Count (*) From Employees
+Group By Department
+--4 records using Group By
+Select (Department)  From Employees e1
+Where 38 <( Select Count (*) from Employees e2 where e1.Department = e2.Department)
+Group By Department
+
+Select (Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+--4--Both are same
+Select Department, Max(Salary) Max_Salary_PerDept, Min(Salary) as MinSalary From Employees
+Group By Department 
+
+Select Department, Salary from Employees
+where Department IN ('Pharmacy')
+Order By Salary DESC
+
+Select Department, (Select Max(Salary) From Employees e1 where e1.Department = d.Department) From Departments d
+Where 38 <( Select Count (*) from Employees e2 where d.Department = e2.Department)
+Group By Department
+
+Select first_name, Department, Salary, 
+(Select Round(Avg(Salary)) From Employees e1 where e1.Department = d.Department) From Employees d
+
+Select * From Employees
+
+--15--Home Work
+
+Select Department, Max(Salary), Min(Salary) From Employees
+Group By Department
+
+Select Department, First_name, Salary,
+CASE 
+	WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+where Salary IN (Max_Department, Min_Department)
+
+--another copy
+Select Department, First_name, Salary,
+CASE WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+Where Salary IN (Max_Department,  Min_Department)
+ORDER BY Department DESC
+
+Select Count (*) From Employees
+Where Email IS NOT NULL
+
+--another copy
+Select Department, First_name, Salary,
+CASE WHEN Salary = Max_Department THEN 'Highest_Salary'
+	WHEN Salary = Min_Department THEN 'Lowest_Salary'
+END as Salary_in_Department
+From(
+Select Department, First_name, Salary, (Select Max(Salary) From Employees e2 
+										Where e1.Department = e2.Department) as Max_Department,
+(Select Min(Salary) From Employees e2 Where e1.Department = e2.Department) as Min_Department
+From Employees e1
+Order By Department) a
+Where Salary IN (Max_Department,  Min_Department)
+ORDER BY Department DESC
+
+--------------------------------------Sec 8, Joining---------------------------------------------------------------------
+
+--Joining Tables
+--1.
+Select * From Departments
+
+Select * From Employees
+Select * From Regions
+--Retrieve First_name, Department, Email without NULL, 
+Select First_name, emp.Department, Email, dep.Division, r.Country From Employees emp, Departments dep, Regions r
+where emp.Department = dep.Department 
+AND emp.Email IS NOT NULL 
+And r.Region_id = emp.Region_id
+Order By emp.Department DESC
+
+--2 Country & Total # of Employees
+--a
+Select country, Count(Employee_id) From Employees emp, Regions reg
+Where emp.Region_id = reg.Region_id
+Group By Country
+--b What is the difference between a and b. Why used two different Select
+Select country, Count(Employee_id) From Employees emp, (Select * From Regions) reg
+Where emp.Region_id = reg.Region_id
+Group By Country
+
+Select country, Count(Employee_id) From Employees e, (Select * From Regions) r
+Where e.Region_id = r.Region_id
+Group By Country
+
+--Joining
+Select country, Count(Employee_id) From Employees emp, Regions reg
+Where emp.Region_id = reg.Region_id
+Group By Country
+
+--3. INNER JOIN (intercepting data in both tables)
+
+Select first_name, country
+From Employees e INNER JOIN regions r
+ON e.region_id = r.region_id
+
+Select first_name, email, division
+From Employees e INNER JOIN departments d
+ON e.department = d.department
+Where Email IS NOT NULL
+
+--Joining three table together or more
+Select First_name, Email, Division, Country
+From Employees e INNER JOIN Departments d
+ON e.Department = d.Department
+INNER JOIN Regions r ON e.Region_id = r.Region_id
+where e.Email is NOT NULL
+Order By Country DESC
+
+
+--4 Left or Right or Full or Outer Join
+Select DISTINCT(Department) From Employees
+--27 Department
+
+Select DISTINCT(Department) From Departments
+--24 Department --INNER JOIN
+--INNER JOIN
+--because INNER JOIN matching only 23 department in both Columns
+ Select DISTINCT (e.Department), (d.Department) From Employees e INNER JOIN Departments d
+ON e.Department = d.Department --Return 23 Department
+
+--LEFT JOIN or LEFT OUTER JOIN, Priority given to retrieve Data from Left Table so all 27 department
+--LEFT JOIN or LEFT OUTER JOIN gives all from Left Table even those data not avaiable in Right Table>
+--Since it is left join, it has retrieve Plumbing, Maintenance, camping, Security are not exist in RIGHT Table.
+
+Select DISTINCT (e.Department) e_Department , (d.Department) d_partment From Employees e LEFT OUTER JOIN Departments d
+ON e.Department = d.Department --Return 27 Department, matching with all the rows in Left Table
+
+--Right JOIN
+Select DISTINCT (e.Department) EmpDepartment, (d.Department) DDepartment From Employees e RIGHT JOIN Departments d
+ON e.Department = d.Department --Return 24 Department, matching with all the rows in the right Table. Camping & Fishing does not exist
+--in Employees but department Table.
+
+Select DISTINCT (e.Department) e_department, (d.Department)d_department From Employees e LEFT JOIN Departments d
+ON e.Department = d.Department --Return 27 Department, matching with all the rows in Left Table
+Where d.Department IS NULL--return only exist in Employee but not Department 
+
+Select DISTINCT (e.Department) e_department, (d.Department)d_department From Employees e LEFT OUTER JOIN Departments d
+ON e.Department = d.Department --Return 27 Department, matching with all the rows in Left Table
+Where d.Department IS NULL--return only exist in Employee but not Department 
+
+Select DISTINCT (e.Department) e_department, (d.Department)d_department From Employees e FULL OUTER JOIN Departments d
+ON e.Department = d.Department --Return 27 Department, matching with all the rows in Left Table
+--Where d.Department IS NULL--return only exist in Employee but not Department 
+--LEFT OUTER JOIN or RIGHT OUTER JOIN or FULL OUTER JOIN includes both sides Missing department either Employees or Department Table.
+
+Select DISTINCT (e.Department) e_Department , (d.Department) d_partment From Employees e RIGHT OUTER JOIN Departments d
+ON e.Department = d.Department --Return 27 Department, matching with all the rows in Left Table
+--where e.Department IS NULL--return only exist in Employee but not Department--just only Camping & Fishing  
+
+--Full Outer JOIN which includes 4 missing department from Department and 1 department from Employees--everything
+Select DISTINCT (e.Department) e_Department , (d.Department) d_partment From Employees e FULL OUTER JOIN Departments d
+ON e.Department = d.Department 
+--Outer join or Full Outer Join Return 27 Department, matching with all the rows in both Tables and also extra one
+--Expose to both table that are not matching
+
+--Question: when to use just e.Department = d.Department without INNER JOINT.
+
+--5 UNION--It is like FULL OUTER JOIN, it does not return duplicate values
+--one set of Data to stacked another set of Data 
+-- Just stacked data on top of each other without duplicating
+--No need for DISTINCT
+Select Department From Employees
+UNION
+Select Department From Departments
+--Same number of Column needs.
+--Data type must match
+--Union ALL returns all including duplicate 24 + 27=51 records
+--Same Data Type either Iteger or Char
+Select DISTINCT(Department) From Employees
+UNION ALL
+Select Department From Departments
+ORDER BY Department
+
+--EXCEPT Only returns that not match in both Table, Matching Employees table with Department and remove if Values matched
+--Return 4
+Select Department From Employees
+EXCEPT
+Select Department From Departments
+ORDER BY Department
+--Departments table with Employees and remove if Values matched
+--Return 1
+--You can also use MINUS instead of EXCEPT
+Select Department From Departments
+EXCEPT
+Select Department From Employees
+ORDER BY Department
+
+Select * From Employees
+--1-HOMEWork
+Select Department, Count(Employee_id) From Employees
+Group By Department
+UNION ALL
+SELECT 'TOTAL', Count (*)
+From Employees
+
+--Not working
+Select Count (*) From (
+Select Department, Count(Employee_id) From Employees
+Group By Department ) a
+
+--2 Most Oldest hire date and recent hire date with First Name and Department
+--UNION or UNION ALL does not allow Order By
+Select First_name, Department, Hire_date, Country From Employees e INNER JOIN Regions r
+ON e.Region_id = r.Region_id
+Where Hire_date =(Select Max(Hire_date) From Employees e1)
+
+Select First_name, Department, Hire_date, Country From Employees e INNER JOIN Regions r
+ON e.Region_id = r.Region_id
+Where Hire_date = (Select Max(Hire_date) From Employees e1)
+UNION ALL
+Select First_name, Department, Hire_date, Country From Employees e INNER JOIN Regions r
+ON e.Region_id = r.Region_id
+Where Hire_date = (Select Min(Hire_date) From Employees e1)
+
+--CROSS or Cartessian Joint
+--Every Employee Berrie is matching Employee B
+--Combinatuion of millions of records
+Select * From (
+Select * From Employees a, Employees b ) sub
+
+Select * From Employees a Cross Join Employees b
+
+--Berrie appeared 24th times, just single employee
+Select * From Employees a Cross Join Departments b
+
+--2.
+Select First_name, department, hire_date, country
+from employees e INNER JOIN regions d 
+ON e.region_id = d.region_id
+where hire_date=(Select MIN(hire_date) from employees e2)
+UNION ALL
+Select First_name, department, hire_date, country
+from employees e INNER JOIN regions d 
+ON e.region_id = d.region_id
+where hire_date=(Select MAX(hire_date) from employees e2)
+
+--3, Query for total salary every 90 days from Hire_date which have different hire_date moving oldest to newest Hire_date
+Select Hire_Date, Salary, (Select SUM(Salary) From Employees e2 where e2.Hire_date BETWEEN e.Hire_date-90 AND e.Hire_date)as Spending
+From Employees e
+Order By Hire_date
+--First Employee's Salary Select Sum (82215 + 106936)=189151
+Select Sum (82215 + 106936)=189151 (2 employees salary summation)
+--First Employee's Salary Select Sum (82215 + 106936)=189151
+Select Sum (82215 + 106936 + 153489)=342640 (3 employees salary summation)
+
+--7 Creating View+
+Select * From Employees
+Select * From Department
+Select * From Regions
+
+Create VIEW v_employee_information as
+Select First_name, Email,  d.Department, Salary, Division, Country, Region
+From Employees e, Departments d, Regions r
+Where e.Department = d.Department AND e.Region_id = r.Region_id
+
+--View
+Select * From v_employee_information
+
+--Inline View
+Select * From (Select * From Departments)
+
+--Home Work
+students, courses, student_enrollment, professors, and teach.
+---1Are the tables student_enrollment and professors directly related to each other? Why or why not?
+No Key is interrelated between these two tables
+
+Select * From courses
+Select * From student_enrollment where Student_no=1
+Select * From professors Order By Last_name
+Select Count(Course_no),  Course_no From Teach Group By Course_no
+Select * From students
+Select DISTINCT(Course_no), * From Teach
+Order By Course_no
+ 
+--2--Write a query that shows the student's name, the courses the student is taking and the professors that teach that course. 
+Select s.Student_name, s.Student_no, (e.course_no)
+From Students s Left Outer Join student_enrollment e
+ON s.Student_no = e.Student_no
+Inner Join Teach t ON t.Course_no = e.Course_no
+
+-Imtiaz
+
+SELECT student_name, se.course_no, p.last_name
+FROM students s INNER JOIN student_enrollment se
+ON s.student_no = se.student_no
+INNER JOIN teach t ON se.course_no = t.course_no
+INNER JOIN professors p ON t.last_name = p.last_name
+ORDER BY student_name;
+
+SELECT student_name, se.course_no, p.last_name
+FROM students s INNER JOIN student_enrollment se
+ON s.student_no = se.student_no
+INNER JOIN teach t ON se.course_no = t.course_no
+INNER JOIN professors p ON t.last_name = p.last_name
+Group By Student_name, se.course_no, p.last_name
+
+--Arnold is taking CS110 with Brown and Also Wilson
+--Micahel enrolled CS180 with Brown, Chong, Wilson, 
+--Same course is teaching by Multiple Professors
+
+--4. In question 3 you discovered why there is repeating data. 
+--How can we eliminate this redundancy? Let's say we only care to see a single professor teaching a course 
+--and we don't care for all the other professors that teach the particular course. 
+--Write a query that will accomplish this so that every record is distinct.
+
+SELECT student_name, course_no, min(last_name)
+FROM (SELECT student_name, se.course_no, p.last_name
+FROM students s
+INNER JOIN student_enrollment se
+ON s.student_no = se.student_no
+INNER JOIN teach t
+ON se.course_no = t.course_no
+INNER JOIN professors p
+ON t.last_name = p.last_name
+) a
+GROUP BY student_name, course_no
+ORDER BY student_name, course_no;
+
+--5. Why are correlated subqueries slower that non-correlated subqueries and joins?
+
+--A "correlated subquery" (i.e., one in which the where condition depends on values obtained 
+--from the rows of the containing/outer query) will execute once for each row. A non-correlated subquery 
+--(one in which the where condition is independent of the containing query) will execute once at the beginning. 
+--If a subquery needs to run for each row of the outer query, that's going be very slow!
+
+--6. n the video lectures, we've been discussing the employees table and the departments table. 
+--Considering those tables, write a query that returns employees whose salary is above average 
+--for their given department.
+
+SELECT first_name
+
+   FROM employees outer_emp
+
+   WHERE salary > (
+
+     SELECT AVG(salary)
+
+       FROM employees
+
+       WHERE department = outer_emp.department);
+	   
+	Select First_name, Salary, (Select ROUND(AVG(Salary)) From Employees e1 where e1.Department=e2.Department) AvgSalary
+	From Employees e2
+	Where Salary> (Select AVG(Salary) From Employees e1 where e1.Department=e2.Department)
+	
+	
+	--7. Write a query that returns ALL of the students as well as any courses they may or may not be taking.
+	
+	Select * From Students s
+	Left Outer join student_enrollment en
+    ON s.student_no = en.student_no
+	
+	Imtiaz
+
+SELECT s.student_no, student_name, course_no
+FROM students s LEFT JOIN student_enrollment se
+    ON s.student_no = se.student_no
+	
+-----------------------------------Windows Function OVER() Clause------------------------------------------------------------
+
+--Function
+--1 OVER PARTITION
+--Use Subquery because First_name is not a aggregate to be added together. There is two same name, 
+--but in Employees in Department group(can be aggregated)
+Select Department,  First_name, (Select COUNT(*) From Employees e1 Where e1.Department = e2.Department)
+From Employees e2
+Group By Department, First_name
+Order By Department, First_name ASC
+
+--Window Function
+Select First_name, Department,
+Count(*) OVER()
+From Employees 
+
+Select First_name, Department,
+Count(*) OVER(PARTITION By Department)
+From Employees 
+Order By Department, First_name ASC
+
+--2both of them Identical
+--EXCEPT means subscract from Upper query by bottom query result and get the difference
+(Select First_name, Department, (Select COUNT(*) From Employees e1 Where e1.Department = e2.Department)
+From Employees e2)
+--Group By Department, First_name
+--Above and below query no differences
+EXCEPT
+Select First_name, Department,
+Count(*) OVER(PARTITION By Department)
+From Employees 
+
+Select First_name, Department, Salary,
+SUM(Salary) OVER(PARTITION By Department)
+From  Employees
+
+Select First_name, Department, Salary,
+SUM(Salary) OVER(PARTITION By Department)
+From Employees 
+ ---Regular Query to see
+Select Department, SUM(Salary)From Employees
+Group By Department, Salary
+
+Select First_name, Department,
+Count(*) Over (PARTITION By Department) PartDepartment,
+Count(*) Over (PARTITION By Region_id) PartRegion
+From Employees
+
+--Partition By Region and Department.
+Select First_name, Department, 
+Count(*) OVER(PARTITION By Department) Dep_count,
+Region_id,
+Count(*) OVER(PARTITION By Region_id) Reg_count
+From Employees 
+
+Select First_name, Department, 
+Count(*) OVER() From Employees---returned total employees of 1000 in some Department
+
+--Query Takes place in 1. From Table, 2. Where Clause 3. Select Columns
+-- In Below Query, Where Clause Region_id first and then Windows Function Over() Clause
+Select First_name, Department, Count(*) OVER() From Employees
+Where Region_id = 3--returned 145 because Where clause first, then From and then Select Clause
+
+Select First_name, Department, Count(*) OVER(PARTITION By DEPARTMENT) From Employees
+Where Region_id = 3
+--1st thing it runs From Clause
+--2nd thing it runs where clause whether meeting the condition.
+--3rd, it checks Select Clause or Column names
+
+--2 OVER with ORDER By
+
+Select First_name, Hire_date, Salary
+From Employees
+Order By Hire_date
+
+Select First_name, Hire_date, Salary,
+SUM (Salary) OVER (PARTITION BY Department ORDER BY Hire_date ASC) as Running_Total_Salary
+From Employees
+Order By Hire_date ASC
+
+--Query for Sum Salary
+--1st person Norbie hired 2003-01-01, 82215 Salary
+--2nd person Cassandra, hired 2003-01-01, 82215+106936=189151 Salary
+Select First_name, Hire_date, Salary,
+SUM(Salary) OVER (Order By Hire_date RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as Total_Salaries
+From Employees
+EXCEPT --No difference in result, so RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW is not needed
+Select First_name, Hire_date, Salary,
+SUM(Salary) OVER (Order By Hire_date) as Total_Salaries
+From Employees
+-- Running Salaries based on Department
+Select First_name, Hire_date, Department, Salary,
+SUM(Salary) OVER (PARTITION By department ORDER BY hire_date) as Total_Salaries
+From Employees
+
+--AVG Salary
+Select First_name, Hire_date, Salary,
+AVG(Salary) OVER (Order By Hire_date RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as Average_Salaries
+From Employees
+--Max Salary
+Select First_name, Hire_date, Salary,
+Max(Salary) OVER (Order By Hire_date RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as Average_Salaries
+From Employees
+
+--Continuous Salary added by the Department
+Select First_name, Hire_date, Department, Salary,
+SUM (Salary) OVER (PARTITION BY Department ORDER BY Hire_date ASC) as Running_Total_Salary
+From Employees
+--Salary is being added preceding row by Hire_date
+Select First_name, Hire_date, Department, Salary,
+SUM (Salary) OVER (ORDER BY Hire_date ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) as Running_Total_Salary
+From Employees
+
+--Last 3 Rows Preceding in order to add together
+Select First_name, Hire_date, Department, Salary,
+SUM (Salary) OVER (ORDER BY Hire_date ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) as Running_Total_Salary
+From Employees
+
+--all 1000 PRECEDING
+Select First_name, Hire_date, Department, Salary,
+SUM (Salary) OVER (ORDER BY Hire_date ROWS BETWEEN 1000 PRECEDING AND CURRENT ROW) as Running_Total_Salary
+From Employees
+
+--1000th total Salary preceding number: 91571594
+Select SUM (Salary) From Employees
+--Total Sum of All Employees 91571594
+
+--RANK --Ranking arranged by Department and highest Salary to Lowest Salary 
+Select First_name, Department, Salary,
+Rank () OVER(Partition By Department Order By Salary DESC )
+From Employees
+--Giving prize to upto 8th Position
+Select * From (
+Select First_name, Department, Salary,
+Rank () OVER(Partition By Department Order By Salary DESC )
+From Employees ) a
+Where Rank = 8
+
+Select First_name, Department, Salary,
+Rank () OVER(Partition By Department Order By Salary DESC )
+From Employees
+
+Select First_name, Department, Salary,
+Count(Employee_id) OVER(Partition By Department)
+From Employees
+--Automotive 32, Beauty: 45, Books:37, camping 36 Employees.
+
+--NTILE How does it divid into Bucket or does it divid into similar number of bucket
+-- Each Row of Department based on Salary is divided into 5 bracket
+Select First_name, Department, Salary,
+NTILE (5) OVER(Partition By Department Order By Salary DESC )
+From Employees
+
+--First_Value
+Select First_name, Department, Hire_date, Salary,
+First_value(Salary) OVER(Partition By Department Order By Salary DESC ) First_value
+From Employees
+
+-- No difference between Max and First_Value
+Select First_name, Department, Salary,
+Max(Salary) OVER(Partition By Department Order By Salary DESC ) First_value
+From Employees
+EXCEPT
+Select First_name, Department, Salary,
+First_value(Salary) OVER(Partition By Department Order By Salary DESC ) First_value
+From Employees
+
+Select First_name, Department, Hire_date, Salary,
+First_value(Salary) OVER(Partition By Department Order By Hire_date Asc ) First_value
+From Employees
+
+--nth_value
+Select First_name, Department, Hire_date, Salary,
+Nth_Value(Salary, 5) OVER(Partition By Department Order By Hire_date Asc ) Nth_value
+From Employees
+
+--3. LEAD AND LEG Function
+--Lead returns every 2nd Salary for previous Salary.
+--Last Row does not have data since no following row
+
+Select First_name, Department, Salary,
+LEAD(Salary) OVER() Next_Salary
+From Employees
+
+--It is opposite to LEAD
+--First Record in Previous Salary is empty because no previous salary
+--Closest Lowest or Max Salary
+Select First_name, Department, Salary,
+LAG(Salary) OVER() Next_Salary
+From Employees
+
+Select First_name, Department, Salary,
+LAG(Salary) OVER() Previus_Salary
+From Employees
+---Order By First_name 
+
+Select First_name, Department, Salary,
+LAG(Salary) OVER(PARTITION BY Department Order By Salary DESC) Previous_Salary
+From Employees
+
+--Closest salary from Highest Salary
+Select First_name, Department, Salary,
+LAG(Salary) OVER(ORDER By Salary DESC) Next_Higher_Salary
+From Employees
+
+Select First_name, Department, Salary,
+LEAD(Salary) OVER(ORDER By Salary DESC) Next_Lowest_Salary
+From Employees
+
+Select Department, First_name, Salary,
+LAG(Salary) OVER(PARTITION BY Department ORDER BY Salary DESC) Nearest_Salary
+From Employee
+
+--4 ROLL UP and 
+CREATE TABLE Sales
+(
+	continent varchar(20),
+	country varchar(20),
+	city varchar(20),
+	units_sold integer
+);
+
+INSERT INTO sales VALUES ('North America', 'Canada', 'Toronto', 10000);
+INSERT INTO sales VALUES ('North America', 'Canada', 'Montreal', 5000);
+INSERT INTO sales VALUES ('North America', 'Canada', 'Vancouver', 15000);
+INSERT INTO sales VALUES ('Asia', 'China', 'Hong Kong', 7000);
+INSERT INTO sales VALUES ('Asia', 'China', 'Shanghai', 3000);
+INSERT INTO sales VALUES ('Asia', 'Japan', 'Tokyo', 5000);
+INSERT INTO sales VALUES ('Europe', 'UK', 'London', 6000);
+INSERT INTO sales VALUES ('Europe', 'UK', 'Manchester', 12000);
+INSERT INTO sales VALUES ('Europe', 'France', 'Paris', 5000);
+Select * From Sales
+
+Select * From Sales
+Order By Continent, Country, City
+
+Select Continent, Count (Country) From Sales
+Group By Continent
+
+Select Continent, SUM(units_sold) From Sales
+Group By Continent
+
+Select Country, SUM(units_sold) From Sales
+Group By Country
+
+Select City, SUM(units_sold) From Sales
+Group By City
+--Grouping Sets can be done by Multiple parameters
+Select Continent, Country, City, SUM(units_sold) From Sales
+Group By GROUPING SETS (Continent, Country, City)
+
+--Grouping Sets can be included ()
+Select Continent, Country, City, SUM(units_sold) From Sales
+Group By GROUPING SETS (Continent, Country, City, ())
+
+-- Everything Together
+--1 Group By Continent + Country + City Together first.
+--2. Group By Continent + Country Together 2nd
+--3. Group By Continent Only
+Select Continent, Country, City, SUM(units_sold) From Sales
+Group By ROLLUP (Continent, Country, City)
+
+--Combination of Total Sold regardless of Group, Continent + Country + City, Continent+Country, Continent only, 
+--Country + City, Country, Then City Only,
+
+Select Continent, Country, City, SUM(units_sold) From Sales
+Group By CUBE (Continent, Country, City)
+--HomeWork
+Select * From Students
+Select * From Student_enrollment
+
+--1. Write a query that finds students who do not take CS180.
+
+Select s.Student_no, s.Student_name, en.Course_no From Students s INNER JOIN Student_enrollment en
+On s.Student_no = en.Student_no where en.Course_no !='CS180'
+
+Select s.Student_no, s.Student_name, (Select Course_no!=('CS180') From Student_enrollment en
+where en.Student_no=s.Student_no) From Students s
+
+--Each student 
+
+Select Student_name, Student_no, Course_no, (Sel)
+
+--Imtiaz
+SELECT * FROM students
+WHERE student_no NOT IN (SELECT student_no FROM student_enrollment WHERE course_no = 'CS180');
+
+Write a query to find students who take CS110 or CS107 but not both.
+Select s.Student_no, s.Student_name, en.Course_no From Students s INNER JOIN Student_enrollment en
+On s.Student_no = en.Student_no where en.Course_no IN ('CS110', 'CS107')
+
+
+Write a query to find students who take CS220 and no other courses.
+
+Select s.Student_no, s.Student_name, en.Course_no From Students s INNER JOIN Student_enrollment en
+On s.Student_no = en.Student_no where en.Course_no IN ('CS220')
+
+Select en.Student_no, s.Student_name, en.Course_no From Student_enrollment en Left Join Students s
+On s.Student_no = en.Student_no where en.Course_no IN ('CS220')
+
+Write a query that finds those students who take at most 2 courses. Your query 
+--should exclude students that don't take any courses as well as those that take more than 2 course.
+
+
+Write a query to find students who are older than at most two other students.
+Write a query that finds students who do not take CS180.
+Write a query to find students who take CS110 or CS107 but not both.
+Write a query to find students who take CS220 and no other courses.
+Write a query that finds those students who take at most 2 courses. Your query should exclude students that don't take any courses as well as those that take more than 2 course.
+Write a query to find students who are older than at most two other students.
+
+Select * From Courses
+Select * From Students
+Select * From student_enrollment
+students, student_enrollment, courses, professors and teach
+
+
+Select s.First_name, From student_enrollment r, Students s
+where r.student_no = s.student_no
+
+Select Department, ('Clothing' IN (Department, First_name)) From Employees
+
+Select Department, (Department like ('%oth%')) From Employees
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				   
