@@ -1,0 +1,934 @@
+ETL Course:
+
+Data Classification and Categories
+ Information	Data Serving a certain context and purpose
+Transactional Data	Describes  an Event or Transaction
+Master Data	Data that is consistently shared across an entire organization
+Reference Data	Structures and standardizes 
+MetaData	
+	
+
+
+Data Quality Dimension: a. Consistency. B. Completeness c. Uniqueness
+d. Accuracy e. validity f. Timeliness 
+Completeness: null value 
+Consistency: 
+Uniqueness: 
+
+Data Quality Repository: 
+
+Data Quality Component: 
+Data ProfilingData Quality Analysis: validating->Data Cleansing Matching, Eliminating errors, Duplicates, Inconsistencies ->Data Quality Monitoring: Reporting and Monitoring 
+Data Profiling: 1. Metadata Discovery (Data Types, length, precision, nullable, Keywords, Tag, Relationship (PM Key, Foreign Key,) 2. Descriptive Methods: count, Mean, Max, Min, Distribution. 3. Validation Levels: Sch	ema, Entity, Attribute
+
+Data Quality Tools: Gartner Magic Quadrant for Data Quality Toos(Gartner 2017)
+DQ Tools: Most recognized tool in the Market: Informatica Data Quality, Talend Open Studio for Data Quality,  IBM InfoSphere, Quality Stage and Information Analyzer, SAS Data Quality, Oracle, Others
+
+A.	Verify Data Completeness: No Null Value
+B.	Verify Data Uniqueness: Each Customer has unique ID to identify each row customer when customers have same name or address or zip code.
+Customer will be assigned to Regional Manager, so Manager ID should be unique. Order: each order should be unique that can be retrieved by Order ID, Product: Each produ-+ct should be identified by Unique ID
+
+Data Quality Views VS. Tables: 
+--Regression Testing and automated ETL testing requires an Ad-Hoc view of data.
+--A dynamic approach to ETL testing.
+--Views do not require manual INSERT, DELETE, UPDATE operations on original tables but it returns data per query execution.
+
+Source System	Staging Area	Data Warehouse	DATA Mart	End User A
+Source A		No one has access 	- Ready to use for End User	End User B
+Source B				End User C
+Source C				
+
+
+We need to create Ad-hoc View of Data to verify following:
+
+
+
+Build the Views to verify Data Quality: 
+--Data Profiling.
+--Data Quality Uniqueness.
+--Data Quality Completeness.
+--Data Quality Validity.
+--Data Quality Consistency.
+--Data Quality Integrity.
+Data Quality Completeness: It identify if a primary key or Foreign Key or Composite Key is Null in a table. 
+Verify OrderID or OrderDate is Null value or not.
+Select * From VW_Order+-//*
+
+
+1.	a.	To verify the Completeness, without Null value-DQ view – Completeness
+CREATE TABLE public."STG_Orders"
+(
+    "RowID" numeric,
+    "OrderID" numeric,
+    "OrderDate" date,
+    "OrderPriority" character varying,
+    "OrderQuantity" numeric,
+    "Sales" numeric,
+    "Discount" numeric,
+    "ShipMode" character varying,
+    "Profit" numeric,
+    "UnitPrice" numeric,
+    "ShippingCost" numeric,
+    "CustomerName" character varying,
+    "ProductName" character varying,
+    "ShipDate" date
+)
+1.	b.	To confirm if RowID is Null value and then count them.
+---'STG_Orders' AS table
+create or replace view dq_completeness as
+select 
+'STG_Orders' AS table,
+'RowID' AS attribute,
+sum(case WHEN "RowID" IS NULL THEN 1 ELSE 0 END) AS count_null_records
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderID' As attribute,
+sum(case WHEN "OrderID" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderDate',
+sum(case WHEN "OrderDate" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderPriority',
+sum(case WHEN "OrderPriority" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderQuantity',
+sum(case WHEN "OrderQuantity" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Sales',
+sum(case WHEN "Sales" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Discount',
+sum(case WHEN "Discount" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ShipMode',
+sum(case WHEN "ShipMode" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Profit',
+sum(case WHEN "Profit" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'UnitPrice',
+sum(case WHEN "UnitPrice" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ShippingCost',
+sum(case WHEN "ShippingCost" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'CustomerName',
+sum(case WHEN "CustomerName" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ProductName',
+sum(case WHEN "ProductName" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ShipDate',
+sum(case WHEN "ShipDate" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Orders"
+union all 
+--'STG_Returns' As Table
+
+select 
+'STG_Returns',
+'OrderID',
+sum(case WHEN "OrderID" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Returns"
+union all 
+select 
+'STG_Returns',
+'Status',
+sum(case WHEN "Status" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Returns"
+union all 
+select 
+'STG_Products',
+'ProductName',
+sum(case WHEN "ProductName" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Products"
+union all 
+select 
+'STG_Products',
+'ProductCategory',
+sum(case WHEN "ProductCategory" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Products"
+union all 
+select 
+'STG_Products',
+'ProductSubCategory',
+sum(case WHEN "ProductSubCategory" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Products"
+union all 
+select 
+'STG_Products',
+'ProductContainer',
+sum(case WHEN "ProductContainer" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Products"
+union all 
+select 
+'STG_Products',
+'ProductBaseMargin',
+sum(case WHEN "ProductBaseMargin" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Products"
+union all 
+select 
+'STG_RegionManagers',
+'Region',
+sum(case WHEN "Region" IS NULL THEN 1 ELSE 0 END)
+from public."STG_RegionManagers"
+union all 
+select 
+'STG_RegionManagers',
+'Manager',
+sum(case WHEN "Manager" IS NULL THEN 1 ELSE 0 END)
+from public."STG_RegionManagers"
+union all 
+select 
+'STG_Customers',
+'CustomerName',
+sum(case WHEN "CustomerName" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Customers"
+union all 
+select 
+'STG_Customers',
+'Province',
+sum(case WHEN "Province" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Customers"
+union all 
+select 
+'STG_Customers',
+'Region',
+sum(case WHEN "Region" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Customers"
+union all 
+select 
+'STG_Customers',
+'CustomerSegment',
+sum(case WHEN "CustomerSegment" IS NULL THEN 1 ELSE 0 END)
+from public."STG_Customers"
+union all 
+select 
+'DWH_Customers',
+'CustomerName',
+sum(case WHEN "CustomerName" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Customers"
+union all 
+select 
+'DWH_Customers',
+'Province',
+sum(case WHEN "Province" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Customers"
+union all 
+select 
+'DWH_Customers',
+'Region',
+sum(case WHEN "Region" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Customers"
+union all 
+select 
+'DWH_Customers',
+'CustomerSegment',
+sum(case WHEN "CustomerSegment" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Customers"
+union all 
+select 
+'DWH_Orders',
+'RowID',
+sum(case WHEN "RowID" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'OrderID',
+sum(case WHEN "OrderID" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'OrderDate',
+sum(case WHEN "OrderDate" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'OrderPriority',
+sum(case WHEN "OrderPriority" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'OrderQuantity',
+sum(case WHEN "OrderQuantity" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'Sales',
+sum(case WHEN "Sales" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'Discount',
+sum(case WHEN "Discount" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'ShipMode',
+sum(case WHEN "ShipMode" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'Profit',
+sum(case WHEN "Profit" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'UnitPrice',
+sum(case WHEN "UnitPrice" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'ShippingCost',
+sum(case WHEN "ShippingCost" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'CustomerName',
+sum(case WHEN "CustomerName" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'ProductName',
+sum(case WHEN "ProductName" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Orders',
+'ShipDate',
+sum(case WHEN "ShipDate" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Orders"
+union all 
+select 
+'DWH_Products',
+'ProductName',
+sum(case WHEN "ProductName" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Products"
+union all 
+select 
+'DWH_Products',
+'ProductCategory',
+sum(case WHEN "ProductCategory" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Products"
+union all 
+select 
+'DWH_Products',
+'ProductSubCategory',
+sum(case WHEN "ProductSubCategory" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Products"
+union all 
+select 
+'DWH_Products',
+'ProductContainer',
+sum(case WHEN "ProductContainer" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Products"
+union all 
+select 
+'DWH_Products',
+'ProductBaseMargin',
+sum(case WHEN "ProductBaseMargin" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Products"
+union all 
+select 
+'DWH_RegionManagers',
+'Region',
+sum(case WHEN "Region" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_RegionManagers"
+union all 
+select 
+'DWH_RegionManagers',
+'Manager',
+sum(case WHEN "Manager" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_RegionManagers"
+union all 
+select 
+'DWH_Returns',
+'OrderID',
+sum(case WHEN "OrderID" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Returns"
+union all 
+select 
+'DWH_Returns',
+'Status',
+sum(case WHEN "Status" IS NULL THEN 1 ELSE 0 END)
+from public."DWH_Returns"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'CustomerName',
+sum(case WHEN "CustomerName" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'Province',
+sum(case WHEN "Province" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'Region',
+sum(case WHEN "Region" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'CustomerSegment',
+sum(case WHEN "CustomerSegment" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'OrderID',
+sum(case WHEN "OrderID" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'OrderDate',
+sum(case WHEN "OrderDate" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+union all 
+select 
+'DM_CustomerRegionalSales',
+'Sales',
+sum(case WHEN "Sales" IS NULL THEN 1 ELSE 0 END)
+from public."DM_CustomerRegionalSales"
+;
+
+Select Count(*) From public.”STG_Order”
+Select distinct “Order_ID”, Count (*) From public.”STG_Order”
+Group By “Order_ID”
+Having Count(*)>1
+
+-------	2.	a. Data Uniqueness. For instance “Order_ID” can’t can be duplicated since it is a Primary Key. It has to be unique.
+
+--DQ view - Uniqueness
+2.	create or replace view dq_uniqueness as
+3.	select 
+4.	'STG_Orders' AS table,
+5.	'OrderID' AS unique_constraint,
+6.	count("OrderID") AS count_records,
+7.	count(distinct "OrderID") AS count_distinct_records,
+8.	count("OrderID") - count(distinct "OrderID") AS count_duplicates
+9.	from public."STG_Orders"
+10.	union all 
+11.	select 
+12.	'STG_Returns',
+13.	'OrderID',
+14.	count("OrderID"),
+15.	count(distinct "OrderID"),
+16.	count("OrderID") - count(distinct "OrderID")
+17.	from public."STG_Returns"
+18.	union all 
+19.	select 
+20.	'STG_Products',
+21.	'ProductName',
+22.	count("ProductName"),
+23.	count(distinct "ProductName"),
+24.	count("ProductName") - count(distinct "ProductName")
+25.	from public."STG_Products"
+26.	union all 
+27.	select 
+28.	'STG_RegionManagers',
+29.	'Manager',
+30.	count("Manager"),
+31.	count(distinct "Manager"),
+32.	count("Manager") - count(distinct "Manager")
+33.	from public."STG_RegionManagers"
+34.	union all 
+35.	select 
+36.	'STG_Customers',
+37.	'CustomerName',
+38.	count("CustomerName"),
+39.	count(distinct "CustomerName"),
+40.	count("CustomerName") - count(distinct "CustomerName")
+41.	from public."STG_Customers"
+42.	union all 
+43.	select 
+44.	'DWH_Customers',
+45.	'CustomerName',
+46.	count("CustomerName"),
+47.	count(distinct "CustomerName"),
+48.	count("CustomerName") - count(distinct "CustomerName")
+49.	from public."DWH_Customers"
+50.	union all 
+51.	select 
+52.	'DWH_Orders',
+53.	'OrderID',
+54.	count("OrderID"),
+55.	count(distinct "OrderID"),
+56.	count("OrderID") - count(distinct "OrderID")
+57.	from public."DWH_Orders"
+58.	union all 
+59.	select 
+60.	'DWH_Products',
+61.	'ProductName',
+62.	count("ProductName"),
+63.	count(distinct "ProductName"),
+64.	count("ProductName") - count(distinct "ProductName")
+65.	from public."DWH_Products"
+66.	union all 
+67.	select 
+68.	'DWH_RegionManagers',
+69.	'Manager',
+70.	count("Manager"),
+71.	count(distinct "Manager"),
+72.	count("Manager") - count(distinct "Manager")
+73.	from public."DWH_RegionManagers"
+74.	union all 
+75.	select 
+76.	'DWH_Returns',
+77.	'OrderID',
+78.	count("OrderID"),
+79.	count(distinct "OrderID"),
+80.	count("OrderID") - count(distinct "OrderID")
+81.	from public."DWH_Returns"
+82.	union all 
+83.	select 
+84.	'DM_CustomerRegionalSales',
+85.	'OrderID',
+86.	count("OrderID"),
+87.	count(distinct "OrderID"),
+88.	count("OrderID") - count(distinct "OrderID")
+89.	from public."DM_CustomerRegionalSales"
+90.	;
+-----------3.	a. Data Validity:
+
+Select * From public.”STG_Orders
+Where “Order_Quantity” <=0
+Select * From public.”STG_Orders
+Where “OrderID” <=0
+
+
+
+Select * From public.”STG_Orders”
+Where “Sales” <=0
+
+Select * From public.”STG_Orders”
+Where “ShipDate” <=”OrderDate”
+
+
+--DQ view - Validity
+create or replace view dq_validity as
+select 
+'STG_Orders' AS table,
+'RowID' AS validity_constraint,
+'> 1' AS validity_rule,
+sum(case WHEN "RowID" > 0 THEN 1 ELSE 0 END) AS count_valid_records,
+sum(case WHEN "RowID" > 0 THEN 0 ELSE 1 END) AS count_invalid_records
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderID',
+'> 1',
+sum(case WHEN "OrderID" > 0 THEN 1 ELSE 0 END),
+sum(case WHEN "OrderID" > 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderDate',
+'> 2000-01-01',
+sum(case WHEN "OrderDate" > to_date('2000-01-01','YYYY-MM-DD') THEN 1 ELSE 0 END),
+sum(case WHEN "OrderDate" > to_date('2000-01-01','YYYY-MM-DD') THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'OrderQuantity',
+'> 0',
+sum(case WHEN "OrderQuantity" > 0 THEN 1 ELSE 0 END),
+sum(case WHEN "OrderQuantity" > 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Sales',
+'> 0',
+sum(case WHEN "Sales" > 0 THEN 1 ELSE 0 END),
+sum(case WHEN "Sales" > 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Discount',
+'>= 0',
+sum(case WHEN "Discount" >= 0 THEN 1 ELSE 0 END),
+sum(case WHEN "Discount" >= 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'Discount',
+'< 1',
+sum(case WHEN "Discount" < 1 THEN 1 ELSE 0 END),
+sum(case WHEN "Discount" < 1 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'UnitPrice',
+'> 0',
+sum(case WHEN "UnitPrice" > 0 THEN 1 ELSE 0 END),
+sum(case WHEN "UnitPrice" > 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ShippingCost',
+'> 0',
+sum(case WHEN "ShippingCost" > 0 THEN 1 ELSE 0 END),
+sum(case WHEN "ShippingCost" > 0 THEN 0 ELSE 1 END)
+from public."STG_Orders"
+union all 
+select 
+'STG_Orders',
+'ShipDate',
+'> $OrderDate',
+sum(case WHEN "ShipDate" >= "OrderDate" THEN 1 ELSE 0 END),
+sum(case WHEN "ShipDate" >= "OrderDate" THEN 0 ELSE 1 END)
+from public."STG_Orders"
+;
+
+-----4. Data Quality Consistency: 
+Data Category or Data Quality that retain same degree of consistent across the database.
+
+Select distinct(“OrderPriority”), count (*) From public.”STG_Orders”
+Group By “OrderPriority”;
+Select distinct(“ShipMode”), count (*) From public.”STG_Orders”
+Group By “ShipMode”;
+
+Result: Critical----1608
+	High---------1768
+	Low---------1720
+	Medium---1631
+	Not Specified->1672
+--DQ view - Consistency
+create or replace view dq_consistency as
+select 
+distinct
+"OrderPriority" AS distinct_values,
+count(*) as number_records,
+'STG_Orders' AS table,
+'OrderPriority' AS column
+from public."STG_Orders"
+group by "OrderPriority"
+union all
+select 
+distinct
+"ShipMode",
+count(*),
+'STG_Orders',
+'ShipMode'
+from public."STG_Orders"
+group by "ShipMode"
+union all
+select 
+distinct
+"Status",
+count(*),
+'STG_Returns',
+'Status'
+from public."STG_Returns"
+group by "Status"
+union all
+select 
+distinct
+"Province",
+count(*),
+'STG_Customers',
+'Province'
+from public."STG_Customers"
+group by "Province"
+union all
+select 
+distinct
+"Region",
+count(*),
+'STG_Customers',
+'Region'
+from public."STG_Customers"
+group by "Region"
+union all
+select 
+distinct
+"CustomerSegment",
+count(*),
+'STG_Customers',
+'CustomerSegment'
+from public."STG_Customers"
+group by "CustomerSegment"
+union all
+select 
+distinct
+"Region",
+count(*),
+'STG_RegionManagers',
+'Region'
+from public."STG_RegionManagers"
+group by "Region"
+union all
+select 
+distinct
+"ProductCategory",
+count(*),
+'STG_Products',
+'ProductCategory'
+from public."STG_Products"
+group by "ProductCategory"
+union all
+select 
+distinct
+"ProductSubCategory",
+count(*),
+'STG_Products',
+'ProductSubCategory'
+from public."STG_Products"
+group by "ProductSubCategory"
+
+------5--Data Integrity Validation:
+Verify the Data from Datamart and target Data if any discrepancy exist between them. Verifying Source and Target data if no difference.
+
+Select “OrderID” From public.”DM_CustomerRegionalSales”
+Except ( Select public.“OrderID”  From “STG_Orders” a
+ INNER JOIN public. DM_CustomerRegionalSales b on a.“OrderID”=b.”Ord
+--DQ view - Integrity (data lineage)
+create or replace view dq_integrity as
+select 
+'STG_Orders' AS table,
+'OrderID' AS column,
+(SELECT "OrderID"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."OrderID"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+) AS integrity_mismatch
+union all
+select 
+'STG_Orders',
+'OrderDate',
+(SELECT "OrderDate"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."OrderDate"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'OrderPriority',
+(SELECT "OrderPriority"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."OrderPriority"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'OrderQuantity',
+(SELECT "OrderQuantity"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."OrderQuantity"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'Sales',
+(SELECT "Sales"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."Sales"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'Discount',
+(SELECT "Discount"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."Discount"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'ShipMode',
+(SELECT "ShipMode"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."ShipMode"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'Profit',
+(SELECT "Profit"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."Profit"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'UnitPrice',
+(SELECT "UnitPrice"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."UnitPrice"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'ShippingCost',
+(SELECT "ShippingCost"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."ShippingCost"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'CustomerName',
+(SELECT "CustomerName"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."CustomerName"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'ProductName',
+(SELECT "ProductName"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."ProductName"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+union all
+select 
+'STG_Orders',
+'ShipDate',
+(SELECT "ShipDate"::text FROM
+public."DWH_Orders"
+EXCEPT --equivalent to minus in Oracle
+(SELECT a."ShipDate"::text
+FROM public."STG_Orders" a
+INNER JOIN public."DWH_Orders" b
+on a."OrderID" = b."OrderID"
+)
+)
+;
+
+-----------7. Data Profiling
+
+Select * From pg_stat_all_tables;
+SELECT * FROM information_schema.columns
+WHERE table_name like '%STG%' or table_name like '%DWH%' or table_name like '%DM%'
+
+--View - Profiling_count_records
+create or replace view data_profiling_count_records as
+SELECT schemaname as schema, relname as table, n_tup_ins as count FROM pg_stat_all_tables
+WHERE relname like '%STG%' or relname like '%DWH%' or relname like '%DM%' 
+;
+--View - Profiling_information_schema
+create or replace view data_profiling_information_schema as
+SELECT * FROM information_schema.columns
+WHERE table_name like '%STG%' or table_name like '%DWH%' or table_name like '%DM%' ;
+
+-----8. Dashboard Monitoring : 
