@@ -1,10 +1,9 @@
 ETL Course:
 
 Data Classification and Categories
- Information	Data Serving a certain context and purpose
-Transactional Data	Describes  an Event or Transaction
-Master Data	Data that is consistently shared across an entire organization
-Reference Data	Structures and standardizes 
+ Information---->Data Serving a certain context and purpose. Transactional Data	Describes  an Event or Transaction
+Master Data----->Data that is consistently shared across an entire organization
+Reference Data--->Structures and standardizes 
 MetaData	
 	
 
@@ -18,7 +17,7 @@ Uniqueness:
 Data Quality Repository: 
 
 Data Quality Component: 
-Data ProfilingData Quality Analysis: validating->Data Cleansing Matching, Eliminating errors, Duplicates, Inconsistencies ->Data Quality Monitoring: Reporting and Monitoring 
+Data Profiling-->Data Quality Analysis: validating->Data Cleansing Matching, Eliminating errors, Duplicates, Inconsistencies ->Data Quality Monitoring: Reporting and Monitoring 
 Data Profiling: 1. Metadata Discovery (Data Types, length, precision, nullable, Keywords, Tag, Relationship (PM Key, Foreign Key,) 2. Descriptive Methods: count, Mean, Max, Min, Distribution. 3. Validation Levels: Sch	ema, Entity, Attribute
 
 Data Quality Tools: Gartner Magic Quadrant for Data Quality Toos(Gartner 2017)
@@ -33,8 +32,8 @@ Data Quality Views VS. Tables:
 --A dynamic approach to ETL testing.
 --Views do not require manual INSERT, DELETE, UPDATE operations on original tables but it returns data per query execution.
 
-Source System	Staging Area	Data Warehouse	DATA Mart	End User A
-Source A		No one has access 	- Ready to use for End User	End User B
+Source System----Staging Area------Data Warehouse-------DATA Mart-----------------------End User A
+Source A-------NA-----------------No one has access-----Ready to use for End User-------End User B
 Source B				End User C
 Source C				
 
@@ -55,7 +54,7 @@ Verify OrderID or OrderDate is Null value or not.
 Select * From VW_Order+-//*
 
 
-1.	a.	To verify the Completeness, without Null value-DQ view – Completeness
+1.	a.To verify the Completeness, without Null value-DQ view – Completeness
 CREATE TABLE public."STG_Orders"
 (
     "RowID" numeric,
@@ -75,6 +74,7 @@ CREATE TABLE public."STG_Orders"
 )
 1.	b.	To confirm if RowID is Null value and then count them.
 ---'STG_Orders' AS table
+
 create or replace view dq_completeness as
 select 
 'STG_Orders' AS table,
